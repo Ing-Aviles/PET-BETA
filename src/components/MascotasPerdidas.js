@@ -51,6 +51,12 @@ const MascotasPerdidas = () => {
     navigate(`/Mascota-Perdida/${owner}/${_id}`);
   }
 
+  const applyFilters = () =>{
+    const newFilteredPets =  lostPetsData.filter((pet) =>{
+
+    })
+  }
+
   return (
     <div>
       <div className="p-2 mb-2 bg-transparent text-body">
@@ -178,7 +184,7 @@ const MascotasPerdidas = () => {
                         <div className="col-md-6">
                           <button
                             className={`btn ${
-                              showFullInfo ? "btn-danger" : "btn-primary"
+                              showFullInfo ? "btn-danger" : "btn-secondary"
                             } align-center btn-block mb-3`}
                             onClick={() => setShowFullInfo(!showFullInfo)}
                           >
@@ -186,7 +192,7 @@ const MascotasPerdidas = () => {
                           </button>
                         </div>
                         <div className="col-md-6">
-                          <button onClick={evt => handleButtonInfo(post)} className="btn btn-info align-center btn-block">
+                          <button onClick={evt => handleButtonInfo(post)} className="btn btn-secondary align-center btn-block">
                             Informacion de contacto
                           </button>
                         </div>
