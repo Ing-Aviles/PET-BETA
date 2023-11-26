@@ -1,15 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/login.css";
 import Loginimg from "../imagenes/Loginimg.png";
 import Person from "../icons/person-fill.svg";
 import Lock from "../icons/lock-fill.svg";
 import Envelope from "../icons/envelope-fill.svg";
+import jwtDecode from "jwt-decode";
+import axios from "axios";
+import { useUserContext } from "../context/contextUser/ContextUser";
+import { BASE_PATH } from "../utilities/constAPI";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const Navigate = useNavigate();
+  const [user, setUser] = useUserContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      Navigate("/Login");
+    }
+  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -21,15 +34,40 @@ const Login = () => {
   };
 
   const handleLogin = () => {
-    if (email === "usuario@example.com" && password === "contraseña") {
-      alert("Inicio de sesión exitoso");
-    } else {
-      setErrorMessage("Correo o Contraseña Incorrectos.");
-    }
+    const data = {
+      email: email,
+      password: password,
+    };
+
+    console.log(data);
+
+    axios
+      .post(`${BASE_PATH}/users/login/`, data)
+      .then((response) => {
+        const token = response.data;
+        const tokenDecoded = jwtDecode(token);
+        const userObject = {
+          id: tokenDecoded.id,
+          token: token,
+        };
+        console.log(userObject);
+        window.localStorage.setItem("userPET", JSON.stringify(userObject));
+        setUser(userObject);
+        Navigate("/Reportar-Mascotas");
+      })
+      .catch((error) => {
+        console.log(error);
+        setError(true);
+        setTimeout(() => {
+          setError(false);
+        }, 3000);
+      });
   };
 
   return (
-    <div className="container login-container">
+    <div>
+    <div style={{ backgroundColor: "#715523" }} class="text-bg p-3"></div>
+    <div className="container login-container mt-md-1">
       <div className="row">
         <div className="col-md-6 d-flex justify-content-center align-items-center black-bg">
           <div className="image-container">
@@ -49,12 +87,17 @@ const Login = () => {
         <div className="col-md-6 d-flex justify-content-center align-items-center cream-bg">
           <div className="bg-white p-5 rounded-5 text-secondary">
             <div className="d-flex justify-content-center">
-              <img src={Person} className="Person"></img>
+              <img src={Person} className="Person" alt="imagen de persona"></img>
             </div>
             <div className="text-center fs-1 fw-bold">Iniciar Sesión</div>
+            {error ? (
+              <div className="alert alert-danger" role="alert">
+                Usuario o contraseña incorrectos
+              </div>
+            ) : null}
             <div className="input-group mt-5">
               <div className="input-group-text bg-brown">
-                <img src={Envelope} className="Envelope"></img>
+                <img src={Envelope} className="Envelope" alt="Imagen Envolpe"></img>
               </div>
               <input
                 type="email"
@@ -67,9 +110,9 @@ const Login = () => {
                 onChange={handleInputChange}
               />
             </div>
-            <div className="input-group mt-5">
+            <div className="input-group mt-5 mb-3">
               <div className="input-group-text bg-brown">
-                <img src={Lock} className="Lock"></img>
+                <img src={Lock} className="Lock" alt="Imagen Lock"></img>
               </div>
               <input
                 type="password"
@@ -89,13 +132,12 @@ const Login = () => {
             >
               Iniciar Sesión
             </button>
-            {errorMessage && (
-              <div className="text-danger mt-3">{errorMessage}</div>
-            )}
           </div>
         </div>
       </div>
     </div>
+    <div style={{ backgroundColor: "#715523" }} class="text-bg p-4"></div>
+</div>
   );
 };
 
