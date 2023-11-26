@@ -11,7 +11,6 @@ import Signup from "./components/SignUp";
 import ReportarMascotas from "./components/ReportarMascotas";
 import { Route, Router, Routes } from "react-router-dom";
 import UserPost from "./components/UserPosts/UserPost";
-
 import { useEffect } from "react";
 import { useUserContext } from "./context/contextUser/ContextUser";
 import RouteProtect from "./routes/RouteProtect/RouteProtect";
